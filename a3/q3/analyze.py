@@ -1,31 +1,43 @@
+import matplotlib.pyplot as plt
 import pandas as pd
-import spacy
-import re
-import ast
-import matplotlib
-from mlxtend.preprocessing import TransactionEncoder
-from mlxtend.frequent_patterns import apriori
+import numpy as np
 
+from scipy.optimize import curve_fit
 
-def createFreqItems(data):
-    te = TransactionEncoder()
-    te_ary = te.fit(data).transform(data)
-    df = pd.DataFrame(te_ary, columns=te.columns_)
-    frequent_itemsets = apriori(df, min_support=0.001, use_colnames=True)
-    frequent_itemsets['length'] = frequent_itemsets['itemsets'].apply(lambda x: len(x))
-    return frequent_itemsets
+def power_law_distribution_function(x, k, alpha):
+    return k*x**alpha
 
-def strTolist(string):
-    return ast.literal_eval(string)
+def fit(x, y):
+    x_line = np.linspace(1, 5, 50)
+    popt, pcov = curve_fit(power_law_distribution_function, x, y, maxfev=10000)
 
-def main():
-    df_normal = pd.read_csv('normal.csv')
-    list_of_tokenized_normal_tweets = df_normal['tweets'].apply(strTolist).tolist()
-    frequent_itemsets_normal = createFreqItems(list_of_tokenized_normal_tweets)
+    plot_label = 'fit k*x^(alpha): k=%5.3f, alpha=%5.3f' % tuple(popt)
+    plt.plot( x_line, power_law_distribution_function(x_line, *popt), label=plot_label)
+
+def process_start(name, plot_label):
+    df_1 = pd.read_csv(name + '-length1.csv')
+    df_2 = pd.read_csv(name + '-length2.csv')
+    df_3 = pd.read_csv(name + '-length3.csv')
+    df_4 = pd.read_csv(name + '-length4.csv')
+    df_5 = pd.read_csv(name + '-length5.csv')
+
+    x = [1,2,3,4,5]
+    y = [ df_1['support'].iloc[0], df_2['support'].iloc[0], df_3['support'].iloc[0], df_4['support'].iloc[0], df_5['support'].iloc[0] ]
+
+    plt.scatter(x, y, label=plot_label)
+
+    fit(x, y)
+
     
-    print(frequent_itemsets_normal)
+def main():
+    
+    process_start('normal', 'D1: Normal Tweets')
+    process_start('covid', 'D2: Covid Tweets')
 
+    plt.legend()
+    plt.grid(True)
+
+    plt.show()
 
 if __name__ == "__main__":
     main()
-

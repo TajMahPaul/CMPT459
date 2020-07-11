@@ -16,6 +16,7 @@ def output(freqItems, name):
     freqItems[freqItems['length'] == 4].nlargest(100, 'support').to_csv(name + '-length4.csv', index=False)
     freqItems[freqItems['length'] == 5].nlargest(100, 'support').to_csv(name + '-length5.csv', index=False)
 
+
 def createFreqItems(data):
     te = TransactionEncoder()
     te_ary = te.fit(data).transform(data)

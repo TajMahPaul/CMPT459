@@ -36,7 +36,8 @@ def main():
     df = df.drop(['support_x', 'support_y', 'length_x', 'length_y'], axis=1)
 
     df = df.reset_index(drop=True)
-    print(df)
+    
+    df.to_csv('final_data.csv', index=False)
 
 if __name__ == "__main__":
     main()

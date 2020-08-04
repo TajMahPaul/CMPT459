@@ -70,16 +70,6 @@ def tokenize(tweets):
                     tokens[text] = 1
     return tokens
 
-def generate_tweets(keyword,api):
-    N = 1000
-    tweets = []
-    for tweet_info in tweepy.Cursor(api.search, q=keyword, lang = 'en',  tweet_mode='extended').items(N):
-        if "retweeted_status" in dir(tweet_info):
-            tweet=tweet_info.retweeted_status.full_text
-        else:
-            tweet=tweet_info.full_text
-
-        tweets.append(tweet)
 
     return tweets
 
@@ -96,7 +86,7 @@ def twitter_login():
     # login and get api object
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token_key, access_token_secret)
-    api = tweepy.API(auth)
+    api = tweepy.API(auth,)
 
     return api
 

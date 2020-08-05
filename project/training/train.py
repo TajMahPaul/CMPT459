@@ -6,7 +6,7 @@ import joblib
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.linear_model import SGDClassifier
+from sklearn.svm import SVR
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
@@ -42,10 +42,10 @@ def main():
     df['text'] = df['text'].str.replace('#', '')
     df['text'] = df['text'].apply(filter_tweets)
 
-    df['score'] = df['score'].apply(score_to_label)
+    # df['score'] = df['score'].apply(score_to_label)
 
-    X_train, X_test, y_train, y_test = train_test_split(df.text.values, df.score.values, test_size=0.3, shuffle=True)
-    model = make_pipeline(CountVectorizer(analyzer='word'), SGDClassifier(alpha=0.001, random_state=5, max_iter=15, tol=None))
+    X_train, X_test, y_train, y_test = train_test_split(df.text.values, df.score.values, test_size=0.2, shuffle=True)
+    model = make_pipeline(CountVectorizer(analyzer='word', ngram_range=(1, 1)), SVR())
     model.fit(X_train,y_train)
 
     print(model.score(X_test, y_test))
